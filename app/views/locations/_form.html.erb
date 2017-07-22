@@ -31,6 +31,11 @@
     <%= form.text_field :longitude, id: :location_longitude %>
   </div>
 
+  <div class="field">
+    <%= form.label :tags %>
+    <%= form.text_field :all_tags, placeholder: "Tags separated with comma", id: :location_tags %>
+    </div>
+
   <div class="actions">
     <%= form.submit %>
   </div>

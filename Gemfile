@@ -55,3 +55,6 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 gem 'gmaps4rails'
 gem "figaro"
+
+gem 'jquery-rails'
+gem 'jquery-turbolinks', '~> 2.1'
