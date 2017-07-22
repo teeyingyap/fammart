@@ -2,18 +2,45 @@ class LocationsController < ApplicationController
   before_action :set_location, only: [:show, :edit, :update, :destroy]
 
   # GET /locations
-  # GET /locations.json
-  def index
-    @locations = Location.all
-    @hash = Gmaps4rails.build_markers(@locations) do |location, marker|
-      marker.lat location.latitude
-      marker.lng location.longitude
-      marker.infowindow render_to_string(partial: "locations/infowindow", locals: { location: location })
-      marker.picture({
-        :url => "http://icons.iconarchive.com/icons/paomedia/small-n-flat/48/map-marker-icon.png",
-        :width   => 48,
-        :height  => 48,
-      })
+  # GET /locations.json 
+
+  def index 
+    if params[:tags]
+      @results = Location.joins(:tags).where(:tags => { :name => params[:tags] }).having("count(tags.name) = ?", params[:tags].count).group('locations.id')
+      # @results = Location.tagged_with(params[:tags])
+      @locations = Location.all
+      @hash = Gmaps4rails.build_markers(@locations) do |location, marker|
+        marker.lat location.latitude
+        marker.lng location.longitude
+        marker.infowindow render_to_string(partial: "locations/infowindow", locals: { location: location })
+        marker.picture({
+          :url => "http://icons.iconarchive.com/icons/paomedia/small-n-flat/48/map-marker-icon.png",
+          :width   => 48,
+          :height  => 48,
+        })
+        marker.json({ 
+          sidebar: render_to_string(partial: "/locations/sidebar", locals: { location: location }) 
+        })
+        # byebug
+  
+      end
+    else
+      @locations = Location.all
+      @hash = Gmaps4rails.build_markers(@locations) do |location, marker|
+        marker.lat location.latitude
+        marker.lng location.longitude
+        marker.infowindow render_to_string(partial: "locations/infowindow", locals: { location: location })
+        marker.picture({
+          :url => "http://icons.iconarchive.com/icons/paomedia/small-n-flat/48/map-marker-icon.png",
+          :width   => 48,
+          :height  => 48,
+        })
+        marker.json({ 
+          sidebar: render_to_string(partial: "/locations/sidebar", locals: { location: location }) 
+        })
+        # byebug
+  
+      end
     end
   end 
 
@@ -79,6 +106,6 @@ class LocationsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def location_params
-      params.require(:location).permit(:name, :description, :latitude, :longitude)
+      params.require(:location).permit(:name, :description, :latitude, :longitude, :all_tags)
     end
 end
